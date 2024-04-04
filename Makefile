@@ -5,9 +5,11 @@ SERVICE_PORT ?= 3000
 DB_HOST ?= localhost
 DB_PORT ?= 5439
 DB_USER ?= postgres
-DB_NAME ?= hhplusClean
+DB_NAME ?= hhplusServer
 DB_PW ?= local_postgres
 DB_URL ?= postgres://$(DB_USER):$(DB_PW)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)?schema=public
+REDIS_HOST ?= redis
+REDIS_PORT ?= 6386
 
 init:
 	npm install --force
@@ -17,14 +19,13 @@ init:
 	DB_PW=$(DB_PW) \
 	DB_NAME=$(DB_NAME) \
 	STAGE=$(STAGE) \
-	SCHEDULER=$(SCHEDULER) \
 		docker-compose build backend
 
 clean:
 	@rm -rf ./dist
 
 run-db:
-	docker-compose up -d postgres
+	docker-compose up -d postgres redis
 
 run: clean run-db
 	@PORT=$(SERVICE_PORT) \
@@ -32,7 +33,6 @@ run: clean run-db
 	DB_PW=$(DB_PW) \
 	DB_NAME=$(DB_NAME) \
 	STAGE=$(STAGE) \
-	SCHEDULER=$(SCHEDULER) \
 		docker-compose up backend
 
 down: clean
