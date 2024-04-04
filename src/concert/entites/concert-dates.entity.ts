@@ -9,12 +9,12 @@ export class ConcertDates extends TimeStampEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string
 
-  @ApiProperty({ type: "timestamp", nullable: false })
-  @Column({ nullable: false })
+  @ApiProperty({ type: Date })
+  @Column({ type: "timestamp", nullable: false })
   concertDate: Date
 
-  @ApiProperty({ type: "timestamp", nullable: false })
-  @Column({ nullable: false })
+  @ApiProperty({ type: Date })
+  @Column({ type: "timestamp", nullable: false })
   reserveDate: Date
 
   @ApiProperty({ type: () => Concert })

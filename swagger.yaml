@@ -262,6 +262,14 @@
         "summary": "좌석 목록 조회",
         "parameters": [
           {
+            "name": "concertDatesId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
             "name": "participation-token",
             "in": "header",
             "description": "Participation token",
@@ -478,12 +486,12 @@
             "format": "uuid"
           },
           "concertDate": {
-            "type": "timestamp",
-            "nullable": false
+            "format": "date-time",
+            "type": "string"
           },
           "reserveDate": {
-            "type": "timestamp",
-            "nullable": false
+            "format": "date-time",
+            "type": "string"
           },
           "concert": {
             "$ref": "#/components/schemas/Concert"
