@@ -19,7 +19,7 @@ async function bootstrap() {
     .build()
   SwaggerModule.setup(`/docs`, app, SwaggerModule.createDocument(app, swaggerConfig))
   writeFileSync(
-    "./docs/swagger.json",
+    "./swagger.json",
     JSON.stringify(SwaggerModule.createDocument(app, swaggerConfig), null, 2),
     { encoding: "utf8" },
   )
