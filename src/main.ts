@@ -16,6 +16,33 @@ async function bootstrap() {
     .setTitle(`Ticket Server API`)
     .setDescription(`Ticket Server API description`)
     .setVersion("0.1")
+    .addBearerAuth(
+      {
+        type: "http",
+        scheme: "bearer",
+        bearerFormat: "JWT",
+        in: "header",
+      },
+      "access-token",
+    )
+    .addBearerAuth(
+      {
+        type: "http",
+        scheme: "bearer",
+        bearerFormat: "JWT",
+        in: "header",
+      },
+      "booking-session-id",
+    )
+    .addBearerAuth(
+      {
+        type: "http",
+        scheme: "bearer",
+        bearerFormat: "JWT",
+        in: "header",
+      },
+      "participation-token",
+    )
     .build()
   SwaggerModule.setup(`/docs`, app, SwaggerModule.createDocument(app, swaggerConfig))
   writeFileSync(

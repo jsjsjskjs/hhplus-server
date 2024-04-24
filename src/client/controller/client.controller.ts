@@ -1,27 +1,24 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Headers,
-  HttpException,
-  HttpStatus,
-  Post,
-} from "@nestjs/common"
+import { Body, Controller, Get, Param, Post } from "@nestjs/common"
 import { ApiHeader, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger"
 import { OkResponseDto } from "@root/shared/dto/base-ok.dto"
-import { GetEntriesResDto } from "@root/client/dto/client.dto"
+import { EnterEntriesDto, GetEntriesResDto } from "@root/client/dto/client.dto"
+import { AuthGuard, SessionIdGuard } from "@root/auth/auth.guard"
+import {
+  Auth,
+  AuthAndSession,
+  AuthSession,
+  AuthUser,
+} from "@root/shared/decorator/auth-user.decorator"
+import { ClientService } from "@root/client/service/client.service"
+import { Client } from "@root/client/entites/client.entity"
 
 @Controller("client")
 @ApiTags("client")
 export class ClientController {
-  constructor() {}
+  constructor(private readonly clientService: ClientService) {}
 
   @Post("me/queue/entries")
-  @ApiHeader({
-    name: "authorization", // 필요한 헤더의 이름
-    description: "Authorization token", // 헤더에 대한 설명
-    required: true, // 헤더가 필수인지 여부
-  })
+  @AuthAndSession(AuthGuard, SessionIdGuard)
   @ApiHeader({
     name: "booking-session-id",
     description: "Booking session id",
@@ -29,14 +26,16 @@ export class ClientController {
   })
   @ApiOperation({ summary: "대기열 진입 요청" })
   @ApiResponse({ status: 201, type: OkResponseDto })
-  enterEntries() {}
+  async enterEntries(
+    @AuthUser() user,
+    @AuthSession() sessionId,
+    @Body() dto: EnterEntriesDto,
+  ) {
+    return await this.clientService.enterEntries(user.email, sessionId, dto)
+  }
 
-  @Get("me/queue/entries")
-  @ApiHeader({
-    name: "authorization", // 필요한 헤더의 이름
-    description: "Authorization token", // 헤더에 대한 설명
-    required: true, // 헤더가 필수인지 여부
-  })
+  @Get("me/queue/entries/:concertDatesId")
+  @AuthAndSession(AuthGuard, SessionIdGuard)
   @ApiHeader({
     name: "booking-session-id",
     description: "Booking session id",
@@ -44,5 +43,11 @@ export class ClientController {
   })
   @ApiOperation({ summary: "내 순서 조회" })
   @ApiResponse({ status: 200, type: GetEntriesResDto })
-  getEntries() {}
+  async getEntries(
+    @AuthUser() user,
+    @AuthSession() sessionId,
+    @Param("concertDatesId") concertDatesId: string,
+  ) {
+    return await this.clientService.getEntries(user.email, sessionId, concertDatesId)
+  }
 }

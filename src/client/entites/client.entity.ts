@@ -25,5 +25,6 @@ export class Client extends TimeStampEntity {
   point: number
 
   @ApiProperty({ type: String, format: "string" })
+  @Column({ nullable: false })
   password: string
 }

@@ -8,6 +8,8 @@ import { ConcertModule } from "./concert/concert.module"
 import { SeatModule } from "./seat/seat.module"
 import { TypeOrmModule } from "@nestjs/typeorm"
 import { ormConfig } from "@root/config/orm.config"
+import { AuthModule } from "./auth/auth.module"
+import { RedisModule } from "./redis/redis.module"
 
 @Module({
   imports: [
@@ -17,6 +19,8 @@ import { ormConfig } from "@root/config/orm.config"
     ReservationModule,
     ConcertModule,
     SeatModule,
+    AuthModule,
+    RedisModule,
   ],
   controllers: [AppController],
   providers: [AppService],

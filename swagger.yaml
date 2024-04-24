@@ -25,17 +25,18 @@
             "schema": {
               "type": "string"
             }
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "description": "Authorization token",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EnterEntriesDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": "",
@@ -50,25 +51,31 @@
         },
         "tags": [
           "client"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
         ]
-      },
+      }
+    },
+    "/client/me/queue/entries/{concertDatesId}": {
       "get": {
         "operationId": "ClientController_getEntries",
         "summary": "내 순서 조회",
         "parameters": [
           {
-            "name": "booking-session-id",
-            "in": "header",
-            "description": "Booking session id",
+            "name": "concertDatesId",
             "required": true,
+            "in": "path",
             "schema": {
               "type": "string"
             }
           },
           {
-            "name": "authorization",
+            "name": "booking-session-id",
             "in": "header",
-            "description": "Authorization token",
+            "description": "Booking session id",
             "required": true,
             "schema": {
               "type": "string"
@@ -89,7 +96,33 @@
         },
         "tags": [
           "client"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
         ]
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "operationId": "AuthController_signIn",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
       }
     },
     "/client/me/coin": {
@@ -268,24 +301,6 @@
             "schema": {
               "type": "string"
             }
-          },
-          {
-            "name": "participation-token",
-            "in": "header",
-            "description": "Participation token",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "description": "Authorization token",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "responses": {
@@ -305,6 +320,14 @@
         },
         "tags": [
           "seat"
+        ],
+        "security": [
+          {
+            "access-token": []
+          },
+          {
+            "participation-token": []
+          }
         ]
       }
     }
@@ -318,7 +341,39 @@
   "tags": [],
   "servers": [],
   "components": {
+    "securitySchemes": {
+      "access-token": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http",
+        "in": "header"
+      },
+      "booking-session-id": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http",
+        "in": "header"
+      },
+      "participation-token": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http",
+        "in": "header"
+      }
+    },
     "schemas": {
+      "EnterEntriesDto": {
+        "type": "object",
+        "properties": {
+          "concertId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "concertId"
+        ]
+      },
       "OkResponseDto": {
         "type": "object",
         "properties": {
@@ -351,6 +406,21 @@
         "required": [
           "type",
           "nowNumber"
+        ]
+      },
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "password"
         ]
       },
       "Client": {
