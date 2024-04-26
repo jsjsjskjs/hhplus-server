@@ -1,6 +1,6 @@
 .PHONY: init clean login-ecr build deploy run down mig test-watch test mig-gen mig-run mig-revert
 
-STAGE ?= dev
+STAGE ?= prod
 SERVICE_PORT ?= 3000
 DB_HOST ?= localhost
 DB_PORT ?= 5439
@@ -10,6 +10,33 @@ DB_PW ?= local_postgres
 DB_URL ?= postgres://$(DB_USER):$(DB_PW)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)?schema=public
 REDIS_HOST ?= redis
 REDIS_PORT ?= 6386
+AWS_PROFILE_OPT ?= --profile sik --region ap-northeast-2
+
+ECR_REGISTRY ?= $(shell aws $(AWS_PROFILE_OPT) ssm get-parameter --name \
+	"/hhplus/$(STAGE)/ecr/registry" | jq '.Parameter | .Value')
+ECR_REPOSITORY ?= $(shell aws $(AWS_PROFILE_OPT) ssm get-parameter --name \
+	"/hhplus/$(STAGE)/ecr/repository" | jq '.Parameter | .Value')
+ECS_CLUSTER_NAME ?= $(shell aws $(AWS_PROFILE_OPT) ssm get-parameter --name \
+	"/hhplus/$(STAGE)/ecs/cluster" | jq '.Parameter | .Value')
+ECS_SERVICE_NAME ?= $(shell aws $(AWS_PROFILE_OPT) ssm get-parameter --name \
+	"/hhplus/$(STAGE)/ecs/service" | jq '.Parameter | .Value')
+
+
+AWS_USER_ID ?= $(shell aws $(AWS_PROFILE_OPT) sts get-caller-identity --query Account --output text)
+
+login-ecr:
+	@aws $(AWS_PROFILE_OPT) ecr get-login-password | docker login --username AWS --password-stdin "$(AWS_USER_ID).dkr.ecr.ap-northeast-2.amazonaws.com"
+
+build: login-ecr clean
+	npm run build
+	docker buildx build --platform linux/amd64 -t $(ECR_REGISTRY)/$(ECR_REPOSITORY):$(STAGE) .
+	docker push $(ECR_REGISTRY)/$(ECR_REPOSITORY):$(STAGE)
+
+deploy:
+	@aws $(AWS_PROFILE_OPT) ecs update-service --cluster $(ECS_CLUSTER_NAME) --service $(ECS_SERVICE_NAME) --force-new-deployment
+ifeq ($(STAGE), prod)
+	@aws $(AWS_PROFILE_OPT) ecs update-service --cluster $(ECS_CLUSTER_NAME) --service $(ECS_SCHEDULER_NAME) --force-new-deployment
+endif
 
 init:
 	npm install --force

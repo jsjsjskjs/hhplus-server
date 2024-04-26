@@ -1,0 +1,49 @@
+# dev
+#name: stage prod
+
+#on:
+#  push:
+#    branches:
+#      - main
+
+#jobs:
+#  deploy:
+#    name: Deploy
+#    runs-on: ubuntu-latest
+#    env:
+#      STAGE: prod
+#      AWS_PROFILE: sik
+
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v2
+
+#      - name: Use Node.js
+#        uses: actions/setup-node@v1
+#        with:
+#          node-version: '20.x'
+
+#      - name: Configure AWS credentials
+#        uses: aws-actions/configure-aws-credentials@v1
+#        with:
+#          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#          aws-region: ap-northeast-2
+
+#      - name: Configure AWS credentials profile
+#        run: |
+#          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }} --profile $AWS_PROFILE
+#          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }} --profile $AWS_PROFILE
+
+#      - name: Login to Amazon ECR
+#        id: login-ecr
+#        uses: aws-actions/amazon-ecr-login@v1
+
+#      - name: Install Node Dependencies
+#        run: make init
+
+#      - name: Build, tag, and push image to Amazon ECR
+#        run: make build
+
+#      - name: Deploy to ECS
+#        run: make deploy

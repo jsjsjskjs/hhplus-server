@@ -22,15 +22,14 @@ WORKDIR /usr/src/app
 
 COPY package*.json ./
 
-# 프로덕션 의존성만 설치
-RUN npm install --only=production
-
 # 개발 단계에서 복사한 node_modules와 소스 코드를 빌드 단계로 복사
 COPY --from=development /usr/src/app/node_modules ./node_modules
 COPY . .
 
 # TypeScript를 JavaScript로 컴파일
 RUN npm run build
+
+USER node
 
 # 프로덕션 환경 설정
 FROM node:20-alpine AS production
