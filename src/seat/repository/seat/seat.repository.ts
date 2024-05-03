@@ -35,7 +35,7 @@ export class SeatRepository implements BaseSeatRepository {
   async findOneById(id: string, manager?: EntityManager) {
     const query = {
       where: { id },
-      relations: ["concertDates"],
+      relations: ["concertDates", "seatGrade"],
     }
     if (manager) {
       return manager.findOne(Seat, query)

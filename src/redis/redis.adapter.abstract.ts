@@ -23,7 +23,7 @@ export abstract class BaseRedisAdapter {
 
   abstract acquireSeatLock(key: string, ttl: number): Promise<boolean>
 
-  abstract relaseSeatLock(key: string): Promise<void>
+  abstract releaseSeatLock(key: string): Promise<void>
 
   abstract getKeysWithPrefix(prefix: string): Promise<string[]>
 }

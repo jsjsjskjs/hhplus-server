@@ -39,6 +39,27 @@ export function AuthAndParti(
   )
 }
 
+export function AuthAndPartiAndSession(
+  authGuard: Type<CanActivate>,
+  partiGuard: Type<CanActivate>,
+  SessionIdGuard: Type<CanActivate>,
+) {
+  return applyDecorators(
+    UseGuards(authGuard, partiGuard, SessionIdGuard),
+    ApiBearerAuth("access-token"),
+    ApiHeader({
+      name: "participation-token",
+      description: "Participation token",
+      required: true,
+    }),
+    ApiHeader({
+      name: "booking-session-id",
+      description: "Booking session id",
+      required: true,
+    }),
+  )
+}
+
 export const AuthUser = createParamDecorator((data: unknown, ctx: ExecutionContext) => {
   const request = ctx.switchToHttp().getRequest()
   return request.user

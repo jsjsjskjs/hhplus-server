@@ -7,6 +7,8 @@ import { Connection, DataSource, EntityManager } from "typeorm"
 import { GetEntriesType, PatchPointType } from "@root/client/enum/client.enum"
 import { AuthService } from "@root/auth/service/auth.service"
 import { ConcertDatesService } from "@root/concert/service/concert-dates.service"
+import { Reservation } from "@root/reservation/entites/reservation.entity"
+import { Seat } from "@root/seat/entites/seat.entity"
 
 @Injectable()
 export class ClientService {
@@ -97,9 +99,9 @@ export class ClientService {
     })
   }
 
-  async usePoint(id: string, amount: number) {
+  async usePoint(id: string, seat: Seat, address: string) {
     await this.connection.transaction(async (manager: EntityManager) => {
-      await this.baseClientRepo.usePoint(id, amount, manager)
+      await this.baseClientRepo.usePoint(id, seat, address, manager)
     })
   }
 }

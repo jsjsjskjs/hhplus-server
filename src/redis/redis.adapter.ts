@@ -59,7 +59,7 @@ export class RedisAdapter implements BaseRedisAdapter {
     return result !== null
   }
 
-  async relaseSeatLock(key: string) {
+  async releaseSeatLock(key: string) {
     await this.redis.del(key)
   }
 
