@@ -15,5 +15,15 @@ export abstract class BaseRedisAdapter {
 
   abstract getQueueSize(concertId: string): Promise<number>
 
-  abstract removeFromQueue(concertDatesId: string, sessionId: string): Promise<void>
+  abstract removeFromReadyQueue(concertDatesId: string, sessionId: string): Promise<void>
+
+  abstract removeFromPartiQueue(concertDatesId: string, sessionId: string): Promise<void>
+
+  abstract removeExpiredParticipants(concertDatesId: string): Promise<number>
+
+  abstract acquireSeatLock(key: string, ttl: number): Promise<boolean>
+
+  abstract relaseSeatLock(key: string): Promise<void>
+
+  abstract getKeysWithPrefix(prefix: string): Promise<string[]>
 }

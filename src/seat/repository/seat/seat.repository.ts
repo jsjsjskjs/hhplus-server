@@ -19,4 +19,28 @@ export class SeatRepository implements BaseSeatRepository {
       return this.repository.find(query)
     }
   }
+
+  async findNotBookingByConcertDateId(concertDatesId: string, manager?: EntityManager) {
+    const query = {
+      where: { concertDates: { id: concertDatesId }, isBooked: false },
+      relations: ["concertDates"],
+    }
+    if (manager) {
+      return manager.find(Seat, query)
+    } else {
+      return this.repository.find(query)
+    }
+  }
+
+  async findOneById(id: string, manager?: EntityManager) {
+    const query = {
+      where: { id },
+      relations: ["concertDates"],
+    }
+    if (manager) {
+      return manager.findOne(Seat, query)
+    } else {
+      return this.repository.findOne(query)
+    }
+  }
 }

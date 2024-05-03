@@ -14,6 +14,7 @@ export const ormConfig: DataSourceOptions = {
   migrations: [path.join(__dirname, "..", "/migrations/**/*{.ts,.js}")],
   migrationsTableName: "migrations_typeorm",
   migrationsRun: true,
+  extra: !process.env.IS_LOCAL_ENV ? { ssl: { rejectUnauthorized: false } } : undefined,
 }
 
 export default new DataSource(ormConfig)

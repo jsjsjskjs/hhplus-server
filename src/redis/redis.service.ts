@@ -41,7 +41,23 @@ export class RedisService {
     return await this.baseRedisAdapter.getQueueSize(concertDatesId + "-parti")
   }
 
-  async removeFromQueue(concertDatesId: string, sessionId: string) {
-    await this.baseRedisAdapter.removeFromQueue(concertDatesId, sessionId)
+  async removeFromReadyQueue(concertDatesId: string, sessionId: string) {
+    await this.baseRedisAdapter.removeFromReadyQueue(concertDatesId, sessionId)
+  }
+
+  async removeExpiredParticipants(concertDatesId: string) {
+    return await this.baseRedisAdapter.removeExpiredParticipants(concertDatesId)
+  }
+
+  async acquireSeatLock(key: string, ttl: number) {
+    return await this.baseRedisAdapter.acquireSeatLock(key, ttl)
+  }
+
+  async relaseSeatLock(key: string) {
+    return await this.baseRedisAdapter.relaseSeatLock(key)
+  }
+
+  async getKeysWithPrefix(prefix: string) {
+    return await this.baseRedisAdapter.getKeysWithPrefix(prefix)
   }
 }

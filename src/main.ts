@@ -34,15 +34,12 @@ async function bootstrap() {
       },
       "booking-session-id",
     )
-    .addBearerAuth(
-      {
-        type: "http",
-        scheme: "bearer",
-        bearerFormat: "JWT",
-        in: "header",
-      },
-      "participation-token",
-    )
+    .addSecurity("participation-token", {
+      type: "http",
+      scheme: "bearer",
+      bearerFormat: "JWT",
+      in: "header",
+    })
     .build()
   SwaggerModule.setup(`/docs`, app, SwaggerModule.createDocument(app, swaggerConfig))
   writeFileSync(

@@ -1,7 +1,11 @@
-import { Body, Controller, Get, Param, Post } from "@nestjs/common"
+import { Body, Controller, Get, Param, Patch, Post } from "@nestjs/common"
 import { ApiHeader, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger"
 import { OkResponseDto } from "@root/shared/dto/base-ok.dto"
-import { EnterEntriesDto, GetEntriesResDto } from "@root/client/dto/client.dto"
+import {
+  EnterEntriesDto,
+  GetEntriesResDto,
+  PatchPointDto,
+} from "@root/client/dto/client.dto"
 import { AuthGuard, SessionIdGuard } from "@root/auth/auth.guard"
 import {
   Auth,
@@ -49,5 +53,21 @@ export class ClientController {
     @Param("concertDatesId") concertDatesId: string,
   ) {
     return await this.clientService.getEntries(user.email, sessionId, concertDatesId)
+  }
+
+  @Get("me/point")
+  @Auth(AuthGuard)
+  @ApiOperation({ summary: "포인트 조회" })
+  @ApiResponse({ status: 200, type: Client })
+  async getPoint(@AuthUser() user) {
+    return await this.clientService.findPoint(user.id)
+  }
+
+  @Patch("me/point/deposit")
+  @Auth(AuthGuard)
+  @ApiOperation({ summary: "포인트 적립" })
+  @ApiResponse({ status: 200, type: Client })
+  async addPoint(@AuthUser() user, @Body() dto: PatchPointDto) {
+    return await this.clientService.addPoint(user.id, dto.amount)
   }
 }

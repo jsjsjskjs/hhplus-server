@@ -1,11 +1,12 @@
 import { forwardRef, Inject, Injectable } from "@nestjs/common"
 import { BaseClientRepository } from "@root/client/repository/client.repository.abstract"
 import { RedisService } from "@root/redis/redis.service"
-import { EnterEntriesDto, GetEntriesResDto } from "@root/client/dto/client.dto"
+import { EnterEntriesDto, PatchPointDto } from "@root/client/dto/client.dto"
 import { ConcertService } from "@root/concert/service/concert.service"
-import { EntityManager } from "typeorm"
-import { GetEntriesType } from "@root/client/enum/client.enum"
+import { Connection, DataSource, EntityManager } from "typeorm"
+import { GetEntriesType, PatchPointType } from "@root/client/enum/client.enum"
 import { AuthService } from "@root/auth/service/auth.service"
+import { ConcertDatesService } from "@root/concert/service/concert-dates.service"
 
 @Injectable()
 export class ClientService {
@@ -13,6 +14,8 @@ export class ClientService {
     @Inject("BaseClientRepository") private readonly baseClientRepo: BaseClientRepository,
     private readonly redisService: RedisService,
     private readonly concertService: ConcertService,
+    private readonly concertDatesService: ConcertDatesService,
+    private connection: DataSource,
     @Inject(forwardRef(() => AuthService)) private authService: AuthService,
   ) {}
 
@@ -28,7 +31,7 @@ export class ClientService {
     const client = await this.findOneByEmail(email)
     if (!client) {
     }
-    const concertDates = await this.concertService.findOneById(dto.concertId)
+    const concertDates = await this.concertDatesService.findOneById(dto.concertDatesId)
     const currentTimeSeconds = Math.floor(Date.now() / 1000)
     await this.redisService.addToReadyQueue(
       concertDates.id,
@@ -37,6 +40,27 @@ export class ClientService {
     )
   }
 
+  async enterParticipant(
+    sessionId: string,
+    concertDatesId: string,
+    myReadyNumber: number,
+  ) {
+    await this.redisService.addToParticipantQueue(
+      concertDatesId,
+      sessionId,
+      Math.floor(Date.now() / 1000),
+    )
+    await this.redisService.removeFromReadyQueue(concertDatesId, sessionId)
+    const { participant_token } = await this.authService.getParticipantToken(
+      concertDatesId,
+      sessionId,
+    )
+    return {
+      type: GetEntriesType.ATTENDING,
+      nowNumber: myReadyNumber,
+      token: participant_token,
+    }
+  }
   async getEntries(email: string, sessionId: string, concertDatesId: string) {
     const client = await this.findOneByEmail(email)
     if (!client) {
@@ -48,24 +72,34 @@ export class ClientService {
     const partiQueueSize = await this.redisService.getPartiQueueSize(
       concertDatesId + "-parti",
     )
-    if (myReadyNumber === 1 && partiQueueSize < 10) {
-      await this.redisService.addToParticipantQueue(
+    if (myReadyNumber === 1 && partiQueueSize === 10) {
+      const expiredNumber = await this.redisService.removeExpiredParticipants(
         concertDatesId,
-        sessionId,
-        Math.floor(Date.now() / 1000),
       )
-      await this.redisService.removeFromQueue(concertDatesId, sessionId)
-      const { participant_token } = await this.authService.getParticipantToken(
-        concertDatesId,
-        sessionId,
-      )
-      return {
-        type: GetEntriesType.ATTENDING,
-        nowNumber: myReadyNumber,
-        token: participant_token,
+      if (expiredNumber > 0) {
+        return await this.enterParticipant(sessionId, concertDatesId, myReadyNumber)
+      } else {
+        return { type: GetEntriesType.WAITING, nowNumber: myReadyNumber }
       }
+    } else if (myReadyNumber === 1 && partiQueueSize < 10) {
+      return await this.enterParticipant(sessionId, concertDatesId, myReadyNumber)
     } else {
       return { type: GetEntriesType.WAITING, nowNumber: myReadyNumber }
     }
+  }
+
+  async findPoint(id: string) {
+    return await this.baseClientRepo.findOneById(id)
+  }
+  async addPoint(id: string, amount: number) {
+    await this.connection.transaction(async (manager: EntityManager) => {
+      await this.baseClientRepo.addPoint(id, amount, manager)
+    })
+  }
+
+  async usePoint(id: string, amount: number) {
+    await this.connection.transaction(async (manager: EntityManager) => {
+      await this.baseClientRepo.usePoint(id, amount, manager)
+    })
   }
 }

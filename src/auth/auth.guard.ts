@@ -15,7 +15,7 @@ export class AuthGuard implements CanActivate {
     const request = context.switchToHttp().getRequest()
     const token = this.extractTokenFromHeader(request)
     if (!token) {
-      console.log("here?")
+      console.log("Auth here?")
       throw new UnauthorizedException("Unauthorized")
     }
     try {
@@ -46,7 +46,7 @@ export class SessionIdGuard implements CanActivate {
     const request = context.switchToHttp().getRequest()
     const sessionId = this.extractTokenFromHeader(request)
     if (!sessionId) {
-      console.log("here?")
+      console.log("Session here?")
       throw new UnauthorizedException("Unauthorized")
     }
     try {
@@ -73,7 +73,7 @@ export class ParticipationGuard implements CanActivate {
     const request = context.switchToHttp().getRequest()
     const token = this.extractTokenFromHeader(request)
     if (!token) {
-      console.log("here?")
+      console.log("Parti here?")
       throw new UnauthorizedException("Unauthorized")
     }
     try {
@@ -89,9 +89,10 @@ export class ParticipationGuard implements CanActivate {
   }
 
   private extractTokenFromHeader(request: Request): string | undefined {
+    console.log("check", request.headers)
     const authHeader = request.headers["participation-token"] as string | undefined
+    console.log("check", authHeader)
     if (!authHeader) return undefined
-    const [type, token] = authHeader.split(" ")
-    return type === "Bearer" ? token : undefined
+    return authHeader
   }
 }

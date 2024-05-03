@@ -32,7 +32,45 @@ export class RedisAdapter implements BaseRedisAdapter {
     return members.length
   }
 
-  async removeFromQueue(concertDatesId: string, sessionId: string) {
+  async removeFromReadyQueue(concertDatesId: string, sessionId: string) {
     await this.redis.zrem(concertDatesId + "-ready", sessionId)
+  }
+
+  async removeFromPartiQueue(concertDatesId: string, sessionId: string) {
+    await this.redis.zrem(concertDatesId + "-parti", sessionId)
+  }
+
+  async removeExpiredParticipants(concertDatesId: string) {
+    const currentTimeSeconds = Math.floor(Date.now() / 1000)
+    const expiryTime = currentTimeSeconds - 480
+    const expiredParticipants = await this.redis.zrangebyscore(
+      concertDatesId + "-parti",
+      "-inf",
+      expiryTime,
+    )
+    if (expiredParticipants.length > 0) {
+      await this.redis.zremrangebyscore(concertDatesId + "-parti", "-inf", expiryTime)
+    }
+    return expiredParticipants.length
+  }
+
+  async acquireSeatLock(key: string, ttl: number) {
+    const result = await this.redis.set(key, "locked", "EX", ttl / 1000, "NX")
+    return result !== null
+  }
+
+  async relaseSeatLock(key: string) {
+    await this.redis.del(key)
+  }
+
+  async getKeysWithPrefix(prefix: string) {
+    let cursor = "0"
+    let keys: string[] = []
+    do {
+      const [newCursor, resultKeys] = await this.redis.scan(cursor, "MATCH", `${prefix}*`)
+      cursor = newCursor
+      keys = keys.concat(resultKeys)
+    } while (cursor !== "0")
+    return keys
   }
 }

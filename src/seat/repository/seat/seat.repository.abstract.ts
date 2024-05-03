@@ -6,4 +6,11 @@ export abstract class BaseSeatRepository {
     concertDatesId: string,
     manager?: EntityManager,
   ): Promise<Seat[]>
+
+  abstract findNotBookingByConcertDateId(
+    concertDatesId: string,
+    manager?: EntityManager,
+  ): Promise<Seat[]>
+
+  abstract findOneById(id: string, manager?: EntityManager): Promise<Seat>
 }

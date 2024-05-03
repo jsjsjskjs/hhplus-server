@@ -104,6 +104,70 @@
         ]
       }
     },
+    "/client/me/point": {
+      "get": {
+        "operationId": "ClientController_getPoint",
+        "summary": "포인트 조회",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Client"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "client"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/client/me/point/deposit": {
+      "patch": {
+        "operationId": "ClientController_addPoint",
+        "summary": "포인트 적립",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchPointDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Client"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "client"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
     "/auth/login": {
       "post": {
         "operationId": "AuthController_signIn",
@@ -301,6 +365,15 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "participation-token",
+            "in": "header",
+            "description": "Participation token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -324,9 +397,112 @@
         "security": [
           {
             "access-token": []
+          }
+        ]
+      }
+    },
+    "/concert-dates/{concertDatesId}/seats/{seatId}/booking": {
+      "post": {
+        "operationId": "SeatController_bookingSeat",
+        "summary": "좌석 예약 요청",
+        "parameters": [
+          {
+            "name": "concertDatesId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
           },
           {
-            "participation-token": []
+            "name": "seatId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "participation-token",
+            "in": "header",
+            "description": "Participation token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Seat"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "seat"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/concert-dates/{concertDatesId}/seats/{seatId}/completion": {
+      "post": {
+        "operationId": "SeatController_completionSeat",
+        "summary": "좌석 예약 완료 요청",
+        "parameters": [
+          {
+            "name": "concertDatesId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "seatId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "participation-token",
+            "in": "header",
+            "description": "Participation token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Reservation"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "seat"
+        ],
+        "security": [
+          {
+            "access-token": []
           }
         ]
       }
@@ -355,9 +531,9 @@
         "in": "header"
       },
       "participation-token": {
+        "type": "http",
         "scheme": "bearer",
         "bearerFormat": "JWT",
-        "type": "http",
         "in": "header"
       }
     },
@@ -365,13 +541,13 @@
       "EnterEntriesDto": {
         "type": "object",
         "properties": {
-          "concertId": {
+          "concertDatesId": {
             "type": "string",
             "format": "uuid"
           }
         },
         "required": [
-          "concertId"
+          "concertDatesId"
         ]
       },
       "OkResponseDto": {
@@ -406,21 +582,6 @@
         "required": [
           "type",
           "nowNumber"
-        ]
-      },
-      "LoginDto": {
-        "type": "object",
-        "properties": {
-          "email": {
-            "type": "string"
-          },
-          "password": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "email",
-          "password"
         ]
       },
       "Client": {
@@ -465,6 +626,32 @@
           "lastName",
           "email",
           "point",
+          "password"
+        ]
+      },
+      "PatchPointDto": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "amount"
+        ]
+      },
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
           "password"
         ]
       },

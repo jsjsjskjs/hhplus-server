@@ -1,4 +1,4 @@
-import { GetEntriesType } from "@root/client/enum/client.enum"
+import { GetEntriesType, PatchPointType } from "@root/client/enum/client.enum"
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger"
 import {
   IsEnum,
@@ -27,5 +27,12 @@ export class EnterEntriesDto {
   @ApiProperty({ type: "string", format: "uuid" })
   @IsNotEmpty()
   @IsUUID()
-  concertId: string
+  concertDatesId: string
+}
+
+export class PatchPointDto {
+  @ApiProperty({ type: "number" })
+  @IsNotEmpty()
+  @IsNumber()
+  amount: number
 }

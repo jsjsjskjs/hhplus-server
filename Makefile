@@ -1,6 +1,6 @@
 .PHONY: init clean login-ecr build deploy run down mig test-watch test mig-gen mig-run mig-revert
 
-STAGE ?= prod
+STAGE ?= dev
 SERVICE_PORT ?= 3000
 DB_HOST ?= localhost
 DB_PORT ?= 5439
@@ -10,7 +10,7 @@ DB_PW ?= local_postgres
 DB_URL ?= postgres://$(DB_USER):$(DB_PW)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)?schema=public
 REDIS_HOST ?= redis
 REDIS_PORT ?= 6386
-AWS_PROFILE_OPT ?= --profile sik --region ap-northeast-2
+AWS_PROFILE_OPT ?= --profile sik --region us-west-1
 
 ECR_REGISTRY ?= $(shell aws $(AWS_PROFILE_OPT) ssm get-parameter --name \
 	"/hhplus/$(STAGE)/ecr/registry" | jq '.Parameter | .Value')
@@ -25,7 +25,7 @@ ECS_SERVICE_NAME ?= $(shell aws $(AWS_PROFILE_OPT) ssm get-parameter --name \
 AWS_USER_ID ?= $(shell aws $(AWS_PROFILE_OPT) sts get-caller-identity --query Account --output text)
 
 login-ecr:
-	@aws $(AWS_PROFILE_OPT) ecr get-login-password | docker login --username AWS --password-stdin "$(AWS_USER_ID).dkr.ecr.ap-northeast-2.amazonaws.com"
+	@aws $(AWS_PROFILE_OPT) ecr get-login-password | docker login --username AWS --password-stdin "$(AWS_USER_ID).dkr.ecr.us-west-1.amazonaws.com"
 
 build: login-ecr clean
 	npm run build

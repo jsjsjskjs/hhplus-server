@@ -6,14 +6,16 @@ import { ConcertDates } from "@root/concert/entites/concert-dates.entity"
 import { BaseConcertRepository } from "@root/concert/repository/concert/concert.repository.abstract"
 import { ConcertRepository } from "@root/concert/repository/concert/concert.repository"
 import { ConcertDatesRepository } from "@root/concert/repository/concert-dates/concert-dates.repository"
+import { ConcertDatesService } from "@root/concert/service/concert-dates.service"
 
 @Module({
   imports: [ConcertModule, TypeOrmModule.forFeature([Concert, ConcertDates])],
   providers: [
     ConcertService,
+    ConcertDatesService,
     { provide: "BaseConcertRepository", useClass: ConcertRepository },
     { provide: "BaseConcertDatesRepository", useClass: ConcertDatesRepository },
   ],
-  exports: [ConcertService],
+  exports: [ConcertService, ConcertDatesService],
 })
 export class ConcertModule {}

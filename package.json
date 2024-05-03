@@ -26,6 +26,8 @@
     "migration:revert": "npm run typeorm -- migration:revert -d src/config/orm.config.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-ssm": "^3.564.0",
+    "@aws-sdk/credential-providers": "^3.564.0",
     "@nestjs/common": "^8.0.0",
     "@nestjs/core": "^8.0.0",
     "@nestjs/jwt": "^10.2.0",

@@ -7,7 +7,7 @@ import {
   UseGuards,
 } from "@nestjs/common"
 
-import { ApiBearerAuth } from "@nestjs/swagger"
+import { ApiBearerAuth, ApiHeader } from "@nestjs/swagger"
 import { SessionIdGuard } from "@root/auth/auth.guard"
 
 export function Auth(authGuard: Type<CanActivate>) {
@@ -31,7 +31,11 @@ export function AuthAndParti(
   return applyDecorators(
     UseGuards(authGuard, partiGuard),
     ApiBearerAuth("access-token"),
-    ApiBearerAuth("participation-token"),
+    ApiHeader({
+      name: "participation-token",
+      description: "Participation token",
+      required: true,
+    }),
   )
 }
 
