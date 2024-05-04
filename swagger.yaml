@@ -251,108 +251,6 @@
         ]
       }
     },
-    "/reservation/seats": {
-      "post": {
-        "operationId": "ReservationController_reserveSeats",
-        "summary": "좌석 예약 요청",
-        "parameters": [
-          {
-            "name": "participation-token",
-            "in": "header",
-            "description": "Participation token",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "description": "Authorization token",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OkResponseDto"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "해당 좌석에 선점권이 없는 경우",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PostReservationSeat400Dto"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "reservation"
-        ]
-      }
-    },
-    "/reservation/confirm": {
-      "post": {
-        "operationId": "ReservationController_confirmReservation",
-        "summary": "예매 정보 입력 및 결제",
-        "parameters": [
-          {
-            "name": "participation-token",
-            "in": "header",
-            "description": "Participation token",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "description": "Authorization token",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Reservation"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "보유하고 있는 Coin이 부족한 경우",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PostConfirmReservation400Dto"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "reservation"
-        ]
-      }
-    },
     "/concert-dates/{concertDatesId}/seats": {
       "get": {
         "operationId": "SeatController_getAllSeats",
@@ -483,8 +381,27 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "booking-session-id",
+            "in": "header",
+            "description": "Booking session id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompletionSeatDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": "",
@@ -892,48 +809,15 @@
           "client"
         ]
       },
-      "PostReservationSeat400Dto": {
+      "CompletionSeatDto": {
         "type": "object",
         "properties": {
-          "message": {
-            "type": "string",
-            "example": "해당 좌석은 이미 예매 중 입니다"
-          },
-          "error": {
-            "type": "string",
-            "example": "Bad Request"
-          },
-          "status": {
-            "type": "number",
-            "example": 400
+          "address": {
+            "type": "string"
           }
         },
         "required": [
-          "message",
-          "error",
-          "status"
-        ]
-      },
-      "PostConfirmReservation400Dto": {
-        "type": "object",
-        "properties": {
-          "message": {
-            "type": "string",
-            "example": "보유하고 있는 Coin이 부족합니다"
-          },
-          "error": {
-            "type": "string",
-            "example": "Bad Request"
-          },
-          "status": {
-            "type": "number",
-            "example": 400
-          }
-        },
-        "required": [
-          "message",
-          "error",
-          "status"
+          "address"
         ]
       }
     }

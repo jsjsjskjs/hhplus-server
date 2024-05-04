@@ -1,20 +1,20 @@
 import { Body, Controller, Get, Param, Patch, Post } from "@nestjs/common"
 import { ApiHeader, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger"
-import { OkResponseDto } from "@root/shared/dto/base-ok.dto"
+import { OkResponseDto } from "../../shared/dto/base-ok.dto"
 import {
   EnterEntriesDto,
   GetEntriesResDto,
   PatchPointDto,
-} from "@root/client/dto/client.dto"
-import { AuthGuard, SessionIdGuard } from "@root/auth/auth.guard"
+} from "../../client/dto/client.dto"
+import { AuthGuard, SessionIdGuard } from "../../auth/auth.guard"
 import {
   Auth,
   AuthAndSession,
   AuthSession,
   AuthUser,
-} from "@root/shared/decorator/auth-user.decorator"
-import { ClientService } from "@root/client/service/client.service"
-import { Client } from "@root/client/entites/client.entity"
+} from "../../shared/decorator/auth-user.decorator"
+import { ClientService } from "../../client/service/client.service"
+import { Client } from "../../client/entites/client.entity"
 
 @Controller("client")
 @ApiTags("client")

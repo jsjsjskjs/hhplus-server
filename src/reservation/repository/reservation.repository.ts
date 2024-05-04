@@ -31,7 +31,10 @@ export class ReservationRepository implements BaseReservationRepository {
   }
 
   async findOneBySeatAndClient(client: Client, seat: Seat, manager?: EntityManager) {
-    const query = { where: { client, seat } }
+    const query = {
+      where: { client: { id: client.id }, seat: { id: seat.id } },
+      relations: ["client", "seat"],
+    }
     if (manager) {
       return manager.findOne(Reservation, query)
     } else {

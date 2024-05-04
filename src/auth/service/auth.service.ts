@@ -13,7 +13,6 @@ export class AuthService {
   async signIn(email: string, password: string) {
     const client = await this.clientService.findOneByEmail(email)
     if (client.password !== password) {
-      console.log("check")
       throw new UnauthorizedException("Invalid email or password")
     }
     const payload = { sub: client.id, email: client.email }

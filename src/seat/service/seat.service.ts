@@ -1,4 +1,11 @@
-import { ForbiddenException, Inject, Injectable, NotFoundException } from "@nestjs/common"
+import {
+  BadRequestException,
+  ForbiddenException,
+  Inject,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from "@nestjs/common"
 import { BaseSeatRepository } from "@root/seat/repository/seat/seat.repository.abstract"
 import { RedisService } from "@root/redis/redis.service"
 import { CompletionSeatDto } from "@root/seat/dto/seat.dto"
@@ -54,8 +61,16 @@ export class SeatService {
     sessionId: string,
   ) {
     const client = await this.clientService.findOneByEmail(email)
+    if (!client) {
+      throw new UnauthorizedException("Invalid client")
+    }
     const seat = await this.findOneById(seatId)
+    console.log("seat", seat)
+    if (seat.isBooked) {
+      throw new ForbiddenException("Seat is already booked")
+    }
     if (client.point < seat.seatGrade.price) {
+      throw new BadRequestException("Not enough point")
     }
     await this.clientService.usePoint(client.id, seat, dto.address)
     await this.redisService.removeFromPartiQueue(concertDatesId, sessionId)

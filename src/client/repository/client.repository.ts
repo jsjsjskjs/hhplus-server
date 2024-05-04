@@ -63,8 +63,11 @@ export class ClientRepository implements BaseClientRepository {
     coinLog.eventType = CoinEventType.REDUCE
     coinLog.reservation = reservation
     await manager.save(CoinLog, coinLog)
-    client.point -= seat.seatGrade.price
 
+    seat.isBooked = true
+    await manager.save(Seat, seat)
+
+    client.point -= seat.seatGrade.price
     return await manager.save(Client, client)
   }
 }

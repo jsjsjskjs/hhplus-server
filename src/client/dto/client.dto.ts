@@ -1,4 +1,4 @@
-import { GetEntriesType, PatchPointType } from "@root/client/enum/client.enum"
+import { GetEntriesType } from "../../client/enum/client.enum"
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger"
 import {
   IsEnum,
