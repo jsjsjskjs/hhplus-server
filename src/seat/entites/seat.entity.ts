@@ -1,4 +1,11 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm"
+import {
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from "typeorm"
 import { TimeStampEntity } from "@root/shared/entity/time-stamp.entity"
 import { ApiProperty } from "@nestjs/swagger"
 import { SeatGrade } from "@root/seat/entites/seat-grade.entity"
@@ -23,6 +30,7 @@ export class Seat extends TimeStampEntity {
   number: number
 
   @ApiProperty({ type: Boolean, default: false })
+  @Index("isBooked")
   @Column({ type: "boolean", nullable: false, default: false })
   isBooked: boolean
 
@@ -32,6 +40,7 @@ export class Seat extends TimeStampEntity {
   seatGrade: SeatGrade
 
   @ApiProperty({ type: () => ConcertDates })
+  @Index("concertDates")
   @ManyToOne(() => ConcertDates, (concertDates) => concertDates.id, { nullable: false })
   @JoinColumn()
   concertDates: ConcertDates
